@@ -1,6 +1,7 @@
 asgiref
 Django
 djangorestframework
+psycopg2
 pytz
 sqlparse
 typing_extensions
