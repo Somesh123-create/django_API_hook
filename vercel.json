@@ -1,5 +1,5 @@
 {
-  "build": [{
+  "builds": [{
     "src":"user_offboard_hook/wsgi.py",
     "use": "@vercel/python",
     "config": {"maxLambdaSize": "15mb", "runtime": "python3.9"}
