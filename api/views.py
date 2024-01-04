@@ -12,7 +12,6 @@ from .models import TicketIDTriggered
 # Create your views here.
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
 def trigger_playbook(request):
     try:
         body = json.loads(request.body)
@@ -20,7 +19,7 @@ def trigger_playbook(request):
         if tiket_id:
             ticket_id_obj, created = TicketIDTriggered.objects.get_or_create(tiket_id=tiket_id)
             ticket_id_obj.save()
-            
+
             return JsonResponse({'message': tiket_id}, status=200)
         else:
             return Response({'error': 'tiket_id not found'}, status=400)
