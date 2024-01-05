@@ -1,27 +1,26 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework import generics, permissions
 from rest_framework.response import Response
 import json
-
-# import models
+from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope
 from .models import TicketIDTriggered
 
-# Create your views here.
-@api_view(['POST'])
-@authentication_classes([TokenAuthentication])
-def trigger_playbook(request):
-    try:
-        body = json.loads(request.body)
-        tiket_id = body.get('tiket_id')
-        if tiket_id:
-            ticket_id_obj, created = TicketIDTriggered.objects.get_or_create(tiket_id=tiket_id)
+
+
+class TriggerPlaybookAPIView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            request_body = request.data
+            ticket_id = request_body.get('tiket_id')
+
+            if not ticket_id:
+                return Response({'error': 'ticket_id not found'}, status=400)
+
+            ticket_id_obj, created = TicketIDTriggered.objects.get_or_create(tiket_id=ticket_id)
             ticket_id_obj.save()
 
-            return JsonResponse({'message': tiket_id}, status=200)
-        else:
-            return Response({'error': 'tiket_id not found'}, status=400)
-    except ValueError:
-        return Response({'error': 'Invalid JSON in request body'}, status=400)
+            return Response({'message': ticket_id_obj.tiket_id}, status=201)
+
+        except json.JSONDecodeError as e:
+            return Response({'error': f'Invalid JSON in request body: {e}'}, status=400)

@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import trigger_playbook
+from .views import TriggerPlaybookAPIView
 
 urlpatterns = [
-    path('playbook-trigger/', trigger_playbook, name='trigger_playbook'),
+    path('playbook-trigger/', TriggerPlaybookAPIView.as_view(), name='trigger_playbook'),
 ]
